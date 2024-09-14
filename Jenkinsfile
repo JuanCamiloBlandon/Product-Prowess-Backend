@@ -11,7 +11,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                // Clona el repositorio de GitHub
+                // Se clona el repositorio de GitHub
                 git branch: 'feature/camilo', url: 'https://github.com/JuanCamiloBlandon/Product-Prowess-Backend.git'
             }
         }
@@ -19,7 +19,7 @@ pipeline {
         stage('Fetch Environment Variables') {
             steps {
                 script {
-                    // Copy the .env file from the config directory
+                    // Se copia las variables de entorno de un directorio local a la carpeta del proyecto
                     bat "copy \"${PATH_ENVIRONMENT_VARIABLES}\" .env"
                 }
             }
@@ -28,7 +28,7 @@ pipeline {
          stage('Install Dependencies') {
             steps {
                 script {
-                    // Instala las dependencias del proyecto
+                    // Se instala las dependencias del proyecto
                     bat 'npm install'
                 }
             }
@@ -38,8 +38,9 @@ pipeline {
             steps {
                 script {
                     // Ejecuta las pruebas unitarias con npm
-                    // Detener el contenedor si está en ejecución
                     bat "docker stop ${DOCKER_CONTAINER} || exit 0"
+
+                    // Detener el contenedor si está en ejecución
                     bat 'npm test'
                 }
             }
@@ -48,7 +49,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    // Construye la imagen Docker
+                    // Se construye la imagen Docker
                     bat "docker build -t ${DOCKER_IMAGE}:${DOCKER_TAG} ."
                 }
             }
