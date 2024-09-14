@@ -5,7 +5,7 @@ pipeline {
         DOCKER_IMAGE = "product-prowess-backend"
         DOCKER_TAG = "latest"
         DOCKER_CONTAINER = "contenedor-product-prowess-backend"
-        ENV_FILE_PATH = 'C:/Users/jblan/Documents/Proyectos desarrollo/Electiva 2 (Desarrollo de software 2)/Jenkins/config/.env'
+        ENV_FILE_PATH = 'C:/Users/jblan/Documents/Proyectos desarrollo/Electiva 2 (Desarrollo de software 2)/Jenkins/config/'
     }
 
     stages {
