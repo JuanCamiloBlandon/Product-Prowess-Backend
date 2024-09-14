@@ -20,7 +20,7 @@ pipeline {
             steps {
                 script {
                     // Copy the .env file from the config directory
-                    bat "copy ${PATH_ENVIRONMENT_VARIABLES} .env"
+                    bat "'copy ${PATH_ENVIRONMENT_VARIABLES} .env'"
                 }
             }
         }
