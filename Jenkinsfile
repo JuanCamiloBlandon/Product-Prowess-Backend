@@ -1,11 +1,17 @@
 pipeline {
     agent any
 
+    environment {
+        DOCKER_IMAGE = "product-prowess-backend"
+        DOCKER_TAG = "latest"
+        DOCKER_CONTAINER = "contenedor-product-prowess-backend"
+    }
+
     stages {
-        stage('Checkout SCM') {
+        stage('Checkout') {
             steps {
-                // Checkout the repository
-                checkout scm
+                // Clona el repositorio de GitHub
+                git branch: 'feature/camilo', url: 'https://github.com/JuanCamiloBlandon/Product-Prowess-Backend.git'
             }
         }
 
@@ -17,41 +23,45 @@ pipeline {
                 }
             }
         }
-
+      
         stage('Build Docker Image') {
-            when {
-                expression { fileExists('.env') }
-            }
             steps {
-                // Build the Docker image using the .env file
-                echo 'Building Docker image...'
-                bat 'docker build -t your_image_name .'
+                script {
+                    // Construye la imagen Docker
+                    bat "docker build -t ${DOCKER_IMAGE}:${DOCKER_TAG} ."
+                }
             }
         }
 
         stage('Deploy') {
-            when {
-                expression { fileExists('.env') }
-            }
             steps {
-                // Deploy the Docker container
-                echo 'Deploying Docker container...'
-                bat 'docker run -d your_image_name'
+                script {
+                    // Detener el contenedor si está en ejecución
+                    bat "docker stop ${DOCKER_CONTAINER} || exit 0"
+                    
+                    // Eliminar el contenedor si existe
+                    bat "docker rm ${DOCKER_CONTAINER} || exit 0"
+                    
+                    // Crear y ejecutar el nuevo contenedor
+                    bat "docker run -d --name ${DOCKER_CONTAINER} -p 3000:3000 ${DOCKER_IMAGE}:${DOCKER_TAG}"
+                }
             }
         }
     }
 
     post {
         always {
-            script {
-                // Clean up Docker system after build
-                bat 'docker system prune -f'
-            }
-
-            // Notify failure if the build fails
-            failure {
-                echo 'Build or deployment failed!'
-            }
+            // Limpia los contenedores y las imágenes después de la ejecución
+            bat 'docker system prune -f'
+        }
+        success {
+            echo 'Build and deployment successful!'
+        }
+        failure {
+            echo 'Build or deployment failed!'
         }
     }
 }
+
+
+
