@@ -38,6 +38,8 @@ pipeline {
             steps {
                 script {
                     // Ejecuta las pruebas unitarias con npm
+                    // Detener el contenedor si está en ejecución
+                    bat "docker stop ${DOCKER_CONTAINER} || exit 0"
                     bat 'npm test'
                 }
             }
