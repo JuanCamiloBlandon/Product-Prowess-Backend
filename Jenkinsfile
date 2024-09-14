@@ -13,7 +13,7 @@ pipeline {
             steps {
                 script {
                     // Copy the .env file from the config directory
-                    bat 'copy "C:/Users/jblan/Documents/Proyectos desarrollo/Electiva 2 (Desarrollo de software 2)/Jenkins/config/.env" .env'
+                    bat 'copy "C:/Users/jblan/Documents/Proyectos desarrollo/Electiva 2 (Desarrollo de software 2)/Jenkins/config/" .env'
                 }
             }
         }
