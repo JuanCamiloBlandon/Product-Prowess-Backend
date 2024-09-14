@@ -33,8 +33,20 @@ pipeline {
                     // Eliminar el contenedor si existe
                     bat "docker rm ${DOCKER_CONTAINER} || exit 0"
                     
-                    // Crear y ejecutar el nuevo contenedor
-                    bat "docker run -d --name ${DOCKER_CONTAINER} -p 3000:3000 ${DOCKER_IMAGE}:${DOCKER_TAG}"
+                    // Crear y ejecutar el nuevo contenedor con las variables de entorno
+                    bat """
+                    docker run -d --name ${DOCKER_CONTAINER} -p 3000:3000 \
+                    -e APP_PORT=3000 \
+                    -e SECRET=3747dc626706c0c6ffb6a8f26977458ce75fd3733c919f8d6221aba5dde90248 \
+                    -e NODE_ENV=dev \
+                    -e MONGODB_URI=mongodb+srv://jblandol:Camilo123456@cluster0.grey8ls.mongodb.net/ \
+                    -e DB_NAME=ProductHunt \
+                    -e DEV_MONGODB_URI=mongodb+srv://jblandol:Camilo123456@cluster0.grey8ls.mongodb.net/ \
+                    -e DEV_DB_NAME=ProductHunt-Dev \
+                    -e TEST_MONGODB_URI=mongodb+srv://jblandol:Camilo123456@cluster0.grey8ls.mongodb.net/ \
+                    -e TEST_DB_NAME=ProductHunt-Test \
+                    ${DOCKER_IMAGE}:${DOCKER_TAG}
+                    """
                 }
             }
         }
