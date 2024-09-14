@@ -24,6 +24,24 @@ pipeline {
                 }
             }
         }
+
+         stage('Install Dependencies') {
+            steps {
+                script {
+                    // Instala las dependencias del proyecto
+                    bat 'npm install'
+                }
+            }
+        }
+
+        stage('Run Unit Tests') {
+            steps {
+                script {
+                    // Ejecuta las pruebas unitarias con npm
+                    bat 'npm test'
+                }
+            }
+        }
       
         stage('Build Docker Image') {
             steps {
