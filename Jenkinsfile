@@ -1,65 +1,57 @@
 pipeline {
     agent any
 
-    environment {
-        DOCKER_IMAGE = "product-prowess-backend"
-        DOCKER_TAG = "latest"
-        DOCKER_CONTAINER = "contenedor-product-prowess-backend"
-        ENV_FILE_PATH = 'C:/Users/jblan/Documents/Proyectos desarrollo/Electiva 2 (Desarrollo de software 2)/Jenkins/config/'
-    }
-
     stages {
-        stage('Checkout') {
+        stage('Checkout SCM') {
             steps {
-                // Clona el repositorio de GitHub
-                git branch: 'feature/camilo', url: 'https://github.com/JuanCamiloBlandon/Product-Prowess-Backend.git'
+                // Checkout the repository
+                checkout scm
             }
         }
 
         stage('Fetch Environment Variables') {
             steps {
                 script {
-                    // Copia el archivo .env al directorio de trabajo de Jenkins
-                    bat "copy \"${ENV_FILE_PATH}.env\" .env"
+                    // Copy the .env file from the config directory
+                    bat 'copy "C:/Users/jblan/Documents/Proyectos desarrollo/Electiva 2 (Desarrollo de software 2)/Jenkins/config/.env" .env'
                 }
             }
         }
 
         stage('Build Docker Image') {
+            when {
+                expression { fileExists('.env') }
+            }
             steps {
-                script {
-                    // Construye la imagen Docker
-                    bat "docker build -t ${DOCKER_IMAGE}:${DOCKER_TAG} ."
-                }
+                // Build the Docker image using the .env file
+                echo 'Building Docker image...'
+                bat 'docker build -t your_image_name .'
             }
         }
 
         stage('Deploy') {
+            when {
+                expression { fileExists('.env') }
+            }
             steps {
-                script {
-                    // Detener el contenedor si está en ejecución
-                    bat "docker stop ${DOCKER_CONTAINER} || exit 0"
-                    
-                    // Eliminar el contenedor si existe
-                    bat "docker rm ${DOCKER_CONTAINER} || exit 0"
-                    
-                    // Crear y ejecutar el nuevo contenedor con las variables de entorno
-                    bat "docker run -d --name ${DOCKER_CONTAINER} -p 3000:3000 --env-file .env ${DOCKER_IMAGE}:${DOCKER_TAG}"
-                }
+                // Deploy the Docker container
+                echo 'Deploying Docker container...'
+                bat 'docker run -d your_image_name'
             }
         }
     }
 
     post {
         always {
-            // Limpia los contenedores y las imágenes después de la ejecución
-            bat 'docker system prune -f'
-        }
-        success {
-            echo 'Build and deployment successful!'
-        }
-        failure {
-            echo 'Build or deployment failed!'
+            script {
+                // Clean up Docker system after build
+                bat 'docker system prune -f'
+            }
+
+            // Notify failure if the build fails
+            failure {
+                echo 'Build or deployment failed!'
+            }
         }
     }
 }
