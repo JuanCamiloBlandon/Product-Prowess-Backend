@@ -28,10 +28,10 @@ pipeline {
             steps {
                 script {
                     // Detener el contenedor si está en ejecución
-                    bat "docker stop ${DOCKER_CONTAINER} || true"
+                    bat "docker stop ${DOCKER_CONTAINER} || exit 0"
                     
                     // Eliminar el contenedor si existe
-                    bat "docker rm ${DOCKER_CONTAINER} || true"
+                    bat "docker rm ${DOCKER_CONTAINER} || exit 0"
                     
                     // Crear y ejecutar el nuevo contenedor
                     bat "docker run -d --name ${DOCKER_CONTAINER} -p 3000:3000 ${DOCKER_IMAGE}:${DOCKER_TAG}"
