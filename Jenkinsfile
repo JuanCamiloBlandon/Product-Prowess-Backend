@@ -20,7 +20,7 @@ pipeline {
             steps {
                 script {
                     // Copia el archivo .env al directorio de trabajo de Jenkins
-                    bat "copy ${ENV_FILE_PATH} .env"
+                    bat "copy \"${ENV_FILE_PATH}.env\" .env"
                 }
             }
         }
