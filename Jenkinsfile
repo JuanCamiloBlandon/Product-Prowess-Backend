@@ -37,10 +37,11 @@ pipeline {
         stage('Run Unit Tests') {
             steps {
                 script {
-                    // Ejecuta las pruebas unitarias con npm
+                    // Detener el contenedor si está en ejecución
+                    
                     bat "docker stop ${DOCKER_CONTAINER} || exit 0"
 
-                    // Detener el contenedor si está en ejecución
+                    // Ejecuta las pruebas unitarias con npm
                     bat 'npm test'
                 }
             }
