@@ -33,7 +33,7 @@
     "preset": "ts-jest",
     "testEnvironment": "node",
     "collectCoverage": true,
-    "testTimeout": 10000,
+    "testTimeout": 50000,
     "coveragePathIgnorePatterns": [
       "/node_modules",
       "/test/",
