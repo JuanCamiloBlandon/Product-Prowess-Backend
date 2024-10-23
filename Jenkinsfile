@@ -11,7 +11,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                // Se  clona el repositorio de GitHub
+                // Se  clona el repositorio de GitHubb
                 git branch: 'feature/camilo', url: 'https://github.com/JuanCamiloBlandon/Product-Prowess-Backend.git'
             }
         }
