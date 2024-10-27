@@ -2,6 +2,8 @@ pipeline {
     agent any
 
     environment {
+        ACR_NAME = "acrterraformproductprowess"
+        ACR_LOGIN_SERVER = "acrterraformproductprowess.azurecr.io"
         DOCKER_IMAGE = "product-prowess-backend"
         DOCKER_TAG = "latest"
         DOCKER_CONTAINER = "contenedor-product-prowess-backend"
@@ -11,7 +13,6 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                // Se  clona el repositorio de GitHub
                 git branch: 'feature/camilo', url: 'https://github.com/JuanCamiloBlandon/Product-Prowess-Backend.git'
             }
         }
@@ -19,7 +20,6 @@ pipeline {
         stage('Fetch Environment Variables') {
             steps {
                 script {
-                    // Se copia las variables de entorno de un directorio local a la carpeta del proyecto
                     bat "copy \"${PATH_ENVIRONMENT_VARIABLES}\" .env"
                 }
             }
@@ -28,7 +28,6 @@ pipeline {
          stage('Install Dependencies') {
             steps {
                 script {
-                    // Se instala las dependencias del proyecto
                     bat 'npm install'
                 }
             }
@@ -37,11 +36,7 @@ pipeline {
         stage('Run Unit Tests') {
             steps {
                 script {
-                    // Detener el contenedor si está en ejecución
-                    
                     bat "docker stop ${DOCKER_CONTAINER} || exit 0"
-
-                    // Ejecuta las pruebas unitarias con npm
                     bat 'npm test'
                 }
             }
@@ -50,31 +45,64 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    // Se construye la imagen Docker
                     bat "docker build -t ${DOCKER_IMAGE}:${DOCKER_TAG} ."
                 }
             }
         }
 
-        stage('Deploy') {
+        stage('Login to ACR') {
             steps {
                 script {
-                    // Detener el contenedor si está en ejecución
-                    bat "docker stop ${DOCKER_CONTAINER} || exit 0"
-                    
-                    // Eliminar el contenedor si existe
-                    bat "docker rm ${DOCKER_CONTAINER} || exit 0"
-                    
-                    // Crear y ejecutar el nuevo contenedor
-                    bat "docker run -d --name ${DOCKER_CONTAINER} -p 3000:3000 ${DOCKER_IMAGE}:${DOCKER_TAG}"
+                    bat "az acr login --name ${ACR_NAME}"
                 }
             }
         }
+
+        stage('Tag Docker Image') {
+            steps {
+                script {
+                    bat "docker tag ${DOCKER_IMAGE}:${DOCKER_TAG} ${ACR_LOGIN_SERVER}/${DOCKER_IMAGE}:${DOCKER_TAG}"
+                }
+            }
+        }
+
+        stage('Push Docker Image to ACR') {
+            steps {
+                script {
+                    bat "docker push ${ACR_LOGIN_SERVER}/${DOCKER_IMAGE}:${DOCKER_TAG}"
+                }
+            }
+        }
+
+        stage('Terraform Init') {
+            steps {
+                script {
+                    bat "terraform init"
+                }
+            }
+        }
+
+        stage('Terraform Plan') {
+            steps {
+                script {
+                    bat "terraform plan -out=tfplan"
+                }
+            }
+        }
+
+        stage('Terraform Apply') {
+            steps {
+                script {
+                    bat "terraform apply -auto-approve"
+                }
+            }
+        }
+
+        
     }
 
     post {
         always {
-            // Limpia los contenedores y las imágenes después de la ejecución
             bat 'docker system prune -f'
         }
         success {
