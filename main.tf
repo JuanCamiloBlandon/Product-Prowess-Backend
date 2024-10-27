@@ -65,6 +65,6 @@ resource "azurerm_container_group" "aci" {
   }
 
   depends_on = [null_resource.docker_push,data.azurerm_container_registry.existing]
-
 }
+
 
