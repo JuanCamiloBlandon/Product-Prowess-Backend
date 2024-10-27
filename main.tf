@@ -39,8 +39,7 @@ resource "azurerm_container_group" "aci" {
   resource_group_name = data.azurerm_resource_group.existing.name
   os_type             = "Linux"
   ip_address_type     = "Public"
-  public_ip_address_id = data.azurerm_public_ip.existing_public_ip.id
-
+  ip_address          = data.azurerm_public_ip.existing_public_ip.ip_address
   container {
     name   = "my-container"
     image  = "${data.azurerm_container_registry.existing.login_server}/product-prowess-backend:latest"
