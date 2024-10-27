@@ -38,8 +38,12 @@ resource "azurerm_container_group" "aci" {
   location            = data.azurerm_resource_group.existing.location
   resource_group_name = data.azurerm_resource_group.existing.name
   os_type             = "Linux"
-  ip_address_type     = "Public"
-  ip_address          = data.azurerm_public_ip.existing_public_ip.ip_address
+
+  ip_address {
+    type = "Public"
+    ip_address_id = data.azurerm_public_ip.existing_public_ip.id  # Asignar la IP estática
+  }
+
   container {
     name   = "my-container"
     image  = "${data.azurerm_container_registry.existing.login_server}/product-prowess-backend:latest"
