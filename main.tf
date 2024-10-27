@@ -38,11 +38,8 @@ resource "azurerm_container_group" "aci" {
   location            = data.azurerm_resource_group.existing.location
   resource_group_name = data.azurerm_resource_group.existing.name
   os_type             = "Linux"
-
-  ip_address {
-    type = "Public"
-    public_ip_address_id = data.azurerm_public_ip.existing_public_ip.id
-  }
+  ip_address_type     = "Public"
+  public_ip_address_id = data.azurerm_public_ip.existing_public_ip.id
 
   container {
     name   = "my-container"
