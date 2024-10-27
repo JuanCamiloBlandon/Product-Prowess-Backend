@@ -24,6 +24,11 @@ data "azurerm_container_registry" "existing" {
   resource_group_name = data.azurerm_resource_group.existing.name
 }
 
+data "azurerm_public_ip" "existing_public_ip" {
+  name                = "ip-estatica-backend"
+  resource_group_name = data.azurerm_resource_group.existing.name
+}
+
 resource "null_resource" "docker_push" {
   provisioner "local-exec" {
     command = "echo 'Docker image pushed to ACR'"
@@ -35,6 +40,11 @@ resource "azurerm_container_group" "aci" {
   location            = data.azurerm_resource_group.existing.location
   resource_group_name = data.azurerm_resource_group.existing.name
   os_type             = "Linux"
+
+  ip_address {
+    type = "Public"
+    public_ip_address_id = data.azurerm_public_ip.existing_public_ip.id
+  }
 
   container {
     name   = "my-container"
