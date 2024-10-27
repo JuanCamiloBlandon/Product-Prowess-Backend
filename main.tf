@@ -13,11 +13,9 @@ provider "azurerm" {
   features {}
 }
 
-
 data "azurerm_resource_group" "existing" {
   name = "TerraformResourceGroup"
 }
-
 
 data "azurerm_container_registry" "existing" {
   name                = "acrterraformproductprowess"
@@ -64,7 +62,5 @@ resource "azurerm_container_group" "aci" {
     password = data.azurerm_container_registry.existing.admin_password
   }
 
-  depends_on = [null_resource.docker_push,data.azurerm_container_registry.existing]
+  depends_on = [null_resource.docker_push, data.azurerm_container_registry.existing]
 }
-
-
